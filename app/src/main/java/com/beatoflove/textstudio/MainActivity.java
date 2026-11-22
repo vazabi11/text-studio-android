@@ -31,7 +31,8 @@ public class MainActivity extends Activity {
     @Override public void onCreate(Bundle state) {
         super.onCreate(state);
         FrameLayout root=new FrameLayout(this);
-        root.setBackgroundColor(Color.rgb(25,34,49));
+        boolean night=(getResources().getConfiguration().uiMode & android.content.res.Configuration.UI_MODE_NIGHT_MASK)==android.content.res.Configuration.UI_MODE_NIGHT_YES;
+        root.setBackgroundColor(night?Color.rgb(32,32,32):Color.rgb(243,243,243));
         web=new WebView(this);
         root.addView(web,new FrameLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT,ViewGroup.LayoutParams.MATCH_PARENT));
         setContentView(root);
@@ -109,6 +110,16 @@ public class MainActivity extends Activity {
     private String fileName(Uri u,String fallback){try(Cursor c=getContentResolver().query(u,new String[]{OpenableColumns.DISPLAY_NAME},null,null,null)){if(c!=null&&c.moveToFirst()&&!c.isNull(0))return c.getString(0);}catch(Exception ignored){}return fallback;}
     private void write(Uri u,byte[] b,String fallback){workers.execute(()->{try(OutputStream out=getContentResolver().openOutputStream(u,"wt")){if(out==null)throw new IOException("ไม่สามารถเปิดไฟล์เพื่อบันทึกได้");out.write(b);out.flush();}catch(Exception e){error(e);return;}runOnUiThread(()->{current=u;js("nativeSaved",fileName(u,fallback));});});}
     public final class Bridge {
+        @JavascriptInterface public String versionInfo(){
+            try {
+                android.content.pm.PackageInfo info=getPackageManager().getPackageInfo(getPackageName(),0);
+                long code=android.os.Build.VERSION.SDK_INT>=28?info.getLongVersionCode():info.versionCode;
+                JSONObject result=new JSONObject();
+                result.put("version",info.versionName==null?"Unavailable":info.versionName);
+                result.put("code",Long.toString(code));
+                return result.toString();
+            } catch(Exception e){return "{}";}
+        }
         @JavascriptInterface public void open(){runOnUiThread(()->{try{Intent i=new Intent(Intent.ACTION_OPEN_DOCUMENT);i.addCategory(Intent.CATEGORY_OPENABLE);i.setType("*/*");i.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION|Intent.FLAG_GRANT_WRITE_URI_PERMISSION);startActivityForResult(i,OPEN);}catch(Exception e){error(e);}});}
         @JavascriptInterface public void ready(){runOnUiThread(()->{
             if(editorReady)return;
@@ -124,6 +135,9 @@ public class MainActivity extends Activity {
         @JavascriptInterface public void save(String b){runOnUiThread(()->{try{if(current==null)throw new IOException("กรุณาใช้ Save As");write(current,bytes(b),fileName(current,"Untitled.txt"));}catch(Exception e){error(e);}});}
         @JavascriptInterface public void saveAs(String name,String b){runOnUiThread(()->{try{pending=bytes(b);pendingName=name;Intent i=new Intent(Intent.ACTION_CREATE_DOCUMENT);i.addCategory(Intent.CATEGORY_OPENABLE);i.setType(mimeForName(name));i.putExtra(Intent.EXTRA_TITLE,name);i.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION|Intent.FLAG_GRANT_WRITE_URI_PERMISSION);startActivityForResult(i,CREATE);}catch(Exception e){pending=null;error(e);}});}
         @JavascriptInterface public void share(String name,String b){workers.execute(()->{try{byte[] raw=bytes(b);String safe=name.replaceAll("[\\\\/\\p{Cntrl}]","_");final String shareName=(safe.isEmpty()||safe.equals(".")||safe.equals(".."))?"Untitled.txt":safe;File dir=new File(getCacheDir(),"share/"+UUID.randomUUID());if(!dir.mkdirs())throw new IOException("สร้างไฟล์ชั่วคราวไม่ได้");File f=new File(dir,shareName);try(FileOutputStream out=new FileOutputStream(f)){out.write(raw);}Uri u=new Uri.Builder().scheme("content").authority("com.beatoflove.textstudio.share").appendPath(dir.getName()).appendPath(shareName).build();runOnUiThread(()->{try{Intent i=new Intent(Intent.ACTION_SEND);i.setType("text/plain");i.putExtra(Intent.EXTRA_STREAM,u);i.setClipData(android.content.ClipData.newRawUri(shareName,u));i.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);startActivity(Intent.createChooser(i,"แชร์ไฟล์ข้อความ"));}catch(Exception e){error(e);}});}catch(Exception e){error(e);}});}
+        @JavascriptInterface public void clipboardWrite(String token,String value){runOnUiThread(()->{try{android.content.ClipboardManager clipboard=(android.content.ClipboardManager)getSystemService(CLIPBOARD_SERVICE);if(clipboard==null||value.length()>MAX)throw new IOException("Clipboard unavailable");clipboard.setPrimaryClip(android.content.ClipData.newPlainText("Text Studio",value));js("clipboardResult",token,"","true");}catch(Exception e){js("clipboardResult",token,"","false");}});}
+        @JavascriptInterface public void clipboardRead(String token){runOnUiThread(()->{try{android.content.ClipboardManager clipboard=(android.content.ClipboardManager)getSystemService(CLIPBOARD_SERVICE);android.content.ClipData clip=clipboard==null?null:clipboard.getPrimaryClip();if(clip==null||clip.getItemCount()==0)throw new IOException("Clipboard empty");CharSequence value=clip.getItemAt(0).getText();if(value==null||value.length()>MAX)throw new IOException("Clipboard text unavailable");js("clipboardResult",token,value.toString(),"true");}catch(Exception e){js("clipboardResult",token,"","false");}});}
+        @JavascriptInterface public void setChrome(boolean dark){runOnUiThread(()->{int c=Color.rgb(dark?32:243,dark?32:243,dark?32:243);((android.view.View)web.getParent()).setBackgroundColor(c);getWindow().setStatusBarColor(c);getWindow().setNavigationBarColor(c);if(android.os.Build.VERSION.SDK_INT>=30){android.view.WindowInsetsController controller=getWindow().getInsetsController();if(controller!=null){int mask=android.view.WindowInsetsController.APPEARANCE_LIGHT_STATUS_BARS|android.view.WindowInsetsController.APPEARANCE_LIGHT_NAVIGATION_BARS;controller.setSystemBarsAppearance(dark?0:mask,mask);}}else{int mask=android.view.View.SYSTEM_UI_FLAG_LIGHT_STATUS_BAR|android.view.View.SYSTEM_UI_FLAG_LIGHT_NAVIGATION_BAR;android.view.View decor=getWindow().getDecorView();decor.setSystemUiVisibility((decor.getSystemUiVisibility()&~mask)|(dark?0:mask));}});}
         @JavascriptInterface public void link(String address){runOnUiThread(()->{try{Uri u=Uri.parse(address);if("https".equals(u.getScheme())||"http".equals(u.getScheme()))startActivity(new Intent(Intent.ACTION_VIEW,u));}catch(Exception e){error(e);}});}
     }
     @Override protected void onActivityResult(int r,int result,Intent data){super.onActivityResult(r,result,data);if(r!=OPEN&&r!=CREATE)return;if(result!=RESULT_OK||data==null||data.getData()==null){pending=null;js("nativeCancelled");return;}Uri u=data.getData();if(r==CREATE){byte[] b=pending;String n=pendingName;pending=null;if(b==null){js("nativeError","ข้อมูลบันทึกไม่พร้อม กรุณาลอง Save As ใหม่");return;}write(u,b,n);return;}readDocument(u,false);}

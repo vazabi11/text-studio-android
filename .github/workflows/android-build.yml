@@ -68,16 +68,18 @@ jobs:
           set -o pipefail
           gradle :app:assembleDebug --no-daemon --stacktrace --console=plain 2>&1 | tee build-log.txt
 
-      - name: Verify APK
+      - name: Verify APK metadata and prepare named artifact
+        id: package
+        shell: bash
         run: |
-          test -s app/build/outputs/apk/debug/app-debug.apk
-          ls -lh app/build/outputs/apk/debug/app-debug.apk
+          set -euo pipefail
+          python3 qa/package_apk.py
 
       - name: Upload APK
         uses: actions/upload-artifact@v6
         with:
-          name: TextStudio-Debug-APK
-          path: app/build/outputs/apk/debug/app-debug.apk
+          name: ${{ steps.package.outputs.artifact_name }}
+          path: ${{ steps.package.outputs.apk_path }}
           if-no-files-found: error
           retention-days: 14
 
