@@ -1,6 +1,12 @@
-# Text Studio 1.0 — Android
+# Text Studio 1.2.1 — Mobile Text Editor
 
 โปรเจกต์ Android Studio แบบ Java + WebView ใช้ editor HTML ที่แนบมาใน assets โดยไม่มีสิทธิ์ INTERNET หรือสิทธิ์เข้าถึงพื้นที่จัดเก็บทั้งหมด ใช้ Storage Access Framework ของ Android เพื่อเปิด/บันทึกไฟล์ที่ผู้ใช้เลือกเอง
+
+## การใช้งาน
+- File, Edit, View: เมนูหลักสำหรับแก้ไขข้อความ เปิดเป็นแผงคำสั่งสำหรับมือถือ
+- แถบล่าง: Open, Save, Find, Undo, Redo; แถบสถานะแสดงบรรทัด คอลัมน์ Zoom EOL และ Encoding
+- รองรับ Open with ตาม MIME ของ Android, คำสั่ง Cut/Copy/Paste, Delete, Select all, Time/Date, Go to line, Word wrap, Read-only, Markdown preview, เลือกฟอนต์/ธีม และ Zoom
+- ใช้งานทีละเอกสาร; Tabs, Recent Files, Print และ AI ไม่รวมในรุ่นนี้
 
 ## สร้าง APK
 1. แตก ZIP และเปิดโฟลเดอร์ที่มี settings.gradle ใน Android Studio
@@ -9,7 +15,7 @@
 4. ไฟล์ debug APK อยู่ที่ app/build/outputs/apk/debug/app-debug.apk ติดตั้งบน Android 8 ขึ้นไป และอนุญาตแหล่งติดตั้งที่ใช้หากจำเป็น
 
 ## ข้อจำกัด
-- ต้นฉบับ Android ยังไม่ได้คอมไพล์และยังไม่ได้ทดสอบบนอุปกรณ์จริง เนื่องจากไม่มี SDK/Gradle ในระบบสร้างไฟล์นี้
+- Source Code V1.2.1 ยังไม่ได้คอมไพล์และยังไม่ได้ทดสอบบนอุปกรณ์จริง เนื่องจากไม่มี SDK/Gradle ในระบบสร้างไฟล์นี้
 - รองรับไฟล์ข้อความขนาดไม่เกิน 5 MiB; ไฟล์ใหญ่หรือมีบรรทัดมากอาจทำงานช้า
 - การบันทึกทับขึ้นกับสิทธิ์และ document provider; หากบันทึกทับไม่ได้ให้ใช้ Save As
 - การตรวจ encoding อัตโนมัติเป็นการเดา: UTF-8/UTF-16 และ fallback Windows-874; เลือกรหัสเองได้
