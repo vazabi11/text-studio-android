@@ -1,6 +1,11 @@
 # Text Studio changelog
 
-## 1.2.2 (versionCode 5) — Prepared source
+## 1.2.3 (versionCode 6) — Prepared source
+- Sticky close control in Settings; main titlebar close and File > Exit share the Android exit guard.
+- Confirm unsaved changes before exit, block exit while file operations are pending, flush opt-in draft.
+- Retain About, version-based APK naming, application ID, Open With and existing workflow.
+
+## 1.2.2 (versionCode 5) — main build passed (#27)
 - Settings > About: own icon, Sirawit Labs identity, installed package version/code, offline, theme-aware, Close only; no GitHub link.
 - CI verifies APK signature and metadata, records checksum/certificate fingerprint and outputs TextStudio-v1.2.2.apk (Debug/testing).
 - Existing application ID, Open With, file editor and signing configuration retained.
