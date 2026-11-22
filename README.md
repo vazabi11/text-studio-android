@@ -1,4 +1,4 @@
-# Text Studio 1.2.2 — Mobile Text Editor
+# Text Studio 1.2.3 — Mobile Text Editor
 
 โปรเจกต์ Android Studio แบบ Java + WebView ใช้ editor HTML ที่แนบมาใน assets โดยไม่มีสิทธิ์ INTERNET หรือสิทธิ์เข้าถึงพื้นที่จัดเก็บทั้งหมด ใช้ Storage Access Framework ของ Android เพื่อเปิด/บันทึกไฟล์ที่ผู้ใช้เลือกเอง
 
@@ -7,6 +7,7 @@
 - แถบล่าง: Open, Save, Find, Undo, Redo; แถบสถานะแสดงบรรทัด คอลัมน์ Zoom EOL และ Encoding
 - รองรับ Open with ตาม MIME ของ Android, คำสั่ง Cut/Copy/Paste, Delete, Select all, Time/Date, Go to line, Word wrap, Read-only, Markdown preview, เลือกฟอนต์/ธีม และ Zoom
 - Settings > About: ข้อมูลผู้พัฒนาและเวอร์ชันจากแพ็กเกจจริง ไม่มีลิงก์ GitHub
+- Settings มีปุ่ม × ปิดหน้าต่าง; ปุ่ม × หน้าหลักและ File > Exit ปิด Activity โดยตรวจงานที่ยังไม่ได้บันทึกและรอให้การบันทึกจบก่อน ไม่ force-stop แอป
 - ใช้งานทีละเอกสาร; Tabs, Recent Files, Print และ AI ไม่รวมในรุ่นนี้
 
 ## สร้าง APK
@@ -15,10 +16,10 @@
 3. Sync Project with Gradle Files แล้วเลือก Build > Generate App Bundles or APKs > Generate APKs (ชื่อเมนูอาจต่างกันตามรุ่น) หรือใช้คำสั่ง gradle :app:assembleDebug จากรากโครงการเมื่อมี Gradle 8.9
 4. ไฟล์ debug APK จาก Gradle โดยตรงอยู่ที่ app/build/outputs/apk/debug/app-debug.apk ติดตั้งบน Android 8 ขึ้นไป และอนุญาตแหล่งติดตั้งที่ใช้หากจำเป็น
 
-5. GitHub Actions ตรวจ signature, metadata และ SHA-256 แล้วส่งออก `TextStudio-v1.2.2.apk` (Debug/testing) โดยไม่ต่อท้ายชื่อด้วย Debug หรือ Release; ประเภท Build อยู่ใน Summary.
+5. GitHub Actions ตรวจ signature, metadata และ SHA-256 แล้วส่งออก `TextStudio-v1.2.3.apk` (Debug/testing) โดยไม่ต่อท้ายชื่อด้วย Debug หรือ Release; ประเภท Build อยู่ใน Summary.
 
 ## ข้อจำกัด
-- Source Code V1.2.2 ยังไม่ได้คอมไพล์และยังไม่ได้ทดสอบบนอุปกรณ์จริง เนื่องจากไม่มี SDK/Gradle ในระบบสร้างไฟล์นี้
+- Source Code V1.2.3 ยังไม่ได้คอมไพล์และยังไม่ได้ทดสอบบนอุปกรณ์จริง เนื่องจากไม่มี SDK/Gradle ในระบบสร้างไฟล์นี้
 - รองรับไฟล์ข้อความขนาดไม่เกิน 5 MiB; ไฟล์ใหญ่หรือมีบรรทัดมากอาจทำงานช้า
 - การบันทึกทับขึ้นกับสิทธิ์และ document provider; หากบันทึกทับไม่ได้ให้ใช้ Save As
 - การตรวจ encoding อัตโนมัติเป็นการเดา: UTF-8/UTF-16 และ fallback Windows-874; เลือกรหัสเองได้
