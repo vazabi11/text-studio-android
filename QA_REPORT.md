@@ -1,8 +1,8 @@
-# Text Studio 1.2.1 — QA report
+# Text Studio 1.2.2 — QA report
 
-Prepared source; base GitHub main 601c0186704e41498763d3c32cc2dd32cb3612b8 (V1.1). No Android build or real device test.
+Prepared source. Parent: PR #1 head 415c2ea10718cde81c859ff419e5023f02becefc (V1.2.1, successful PR run #23). Main at preparation: 601c0186704e41498763d3c32cc2dd32cb3612b8. All 16 files in previous full app source ZIP matched PR Git blob SHA; two unrelated tracked fix/ files are preserved by overlay and excluded from the app package.
 
-Removed 24 trailing descriptions/keyboard hints. Node syntax and manifest XML parse passed; manifest unchanged. Chromium simulated NativeText bridge 29/29 passed. Tests:
+Browser QA using Chromium simulated NativeText bridge, 38/38 passed:
 - PASS: no trailing command descriptions
 - PASS: startup and no JS errors
 - PASS: light theme
@@ -32,7 +32,16 @@ Removed 24 trailing descriptions/keyboard hints. Node syntax and manifest XML pa
 - PASS: dark mode
 - PASS: compact keyboard viewport
 - PASS: no runtime errors
+- PASS: about opens from settings
+- PASS: about dynamic metadata
+- PASS: about no GitHub or links
+- PASS: about own brand
+- PASS: about compact viewport
+- PASS: about close
+- PASS: about native back
+- PASS: about guards external open
+- PASS: no runtime errors after about
 
-No Microsoft fonts, logos or screenshots are bundled in this source tree. System font stack and project vector artwork retained. This is not legal clearance.
+Node JS syntax and workflow YAML parsed. Packaging helper tested against mock apksigner/aapt output: correct name and bytes, no overwrite, mismatched ID rejected, missing debug flag rejected, failed signer rejected (5/5). This is not real APK verification. Actual Android compile, APK signing/certificate continuity, permissions and device acceptance remain pending. No additional dependencies or signing changes; AndroidManifest unchanged.
 
-Open with: ACTION_VIEW / ACTION_EDIT, CATEGORY_DEFAULT, content URI and text/* plus specific structured-text MIME types. Real chooser/default association depends on sender MIME and Android resolver. Generic octet-stream and file:// not registered. Device acceptance, signing, update compatibility and actual file provider grants remain unverified.
+Standard: MAS-STD-009-ID V1.2 / Hybrid Policy V1.4. About omits GitHub, reads version/code from Android package metadata; APK name TextStudio-v1.2.2.apk; debug/testing remains in CI summary.

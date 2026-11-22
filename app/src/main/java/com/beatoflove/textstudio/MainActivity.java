@@ -110,6 +110,16 @@ public class MainActivity extends Activity {
     private String fileName(Uri u,String fallback){try(Cursor c=getContentResolver().query(u,new String[]{OpenableColumns.DISPLAY_NAME},null,null,null)){if(c!=null&&c.moveToFirst()&&!c.isNull(0))return c.getString(0);}catch(Exception ignored){}return fallback;}
     private void write(Uri u,byte[] b,String fallback){workers.execute(()->{try(OutputStream out=getContentResolver().openOutputStream(u,"wt")){if(out==null)throw new IOException("ไม่สามารถเปิดไฟล์เพื่อบันทึกได้");out.write(b);out.flush();}catch(Exception e){error(e);return;}runOnUiThread(()->{current=u;js("nativeSaved",fileName(u,fallback));});});}
     public final class Bridge {
+        @JavascriptInterface public String versionInfo(){
+            try {
+                android.content.pm.PackageInfo info=getPackageManager().getPackageInfo(getPackageName(),0);
+                long code=android.os.Build.VERSION.SDK_INT>=28?info.getLongVersionCode():info.versionCode;
+                JSONObject result=new JSONObject();
+                result.put("version",info.versionName==null?"Unavailable":info.versionName);
+                result.put("code",Long.toString(code));
+                return result.toString();
+            } catch(Exception e){return "{}";}
+        }
         @JavascriptInterface public void open(){runOnUiThread(()->{try{Intent i=new Intent(Intent.ACTION_OPEN_DOCUMENT);i.addCategory(Intent.CATEGORY_OPENABLE);i.setType("*/*");i.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION|Intent.FLAG_GRANT_WRITE_URI_PERMISSION);startActivityForResult(i,OPEN);}catch(Exception e){error(e);}});}
         @JavascriptInterface public void ready(){runOnUiThread(()->{
             if(editorReady)return;

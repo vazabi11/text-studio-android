@@ -1,6 +1,12 @@
 # Text Studio changelog
 
-## 1.2.1 (versionCode 4) — Prepared source
+## 1.2.2 (versionCode 5) — Prepared source
+- Settings > About: own icon, Sirawit Labs identity, installed package version/code, offline, theme-aware, Close only; no GitHub link.
+- CI verifies APK signature and metadata, records checksum/certificate fingerprint and outputs TextStudio-v1.2.2.apk (Debug/testing).
+- Existing application ID, Open With, file editor and signing configuration retained.
+- Android build and device acceptance pending.
+
+## 1.2.1 (versionCode 4) — PR Build passed (#23), device acceptance pending
 - Remove all trailing descriptions and shortcut hints from File / Edit / View command menus. Keep command names, touch targets and toggle checkmarks.
 - Use independent Text Studio branding. No Microsoft assets imported.
 - Retain existing external file MIME registration and URI handling unchanged.
