@@ -42,20 +42,25 @@ jobs:
           gradle-version: '8.9'
           cache-disabled: true
 
+      - name: Setup Android SDK Tools
+        uses: android-actions/setup-android@v3
+        with:
+          cmdline-tools-version: '12266719'
+          accept-android-sdk-licenses: 'true'
+          packages: ''
+
       - name: Check build environment
+        shell: bash
         run: |
           java -version
           gradle --version
           echo "ANDROID_HOME=${ANDROID_HOME:-unset}"
           command -v sdkmanager
+          sdkmanager --version
 
       - name: Install Android SDK
         shell: bash
-        run: |
-          set +o pipefail
-          yes | sdkmanager --licenses > /dev/null
-          set -o pipefail
-          sdkmanager 'platforms;android-35' 'build-tools;34.0.0'
+        run: sdkmanager 'platforms;android-35' 'build-tools;34.0.0'
 
       - name: Build Debug APK
         shell: bash
